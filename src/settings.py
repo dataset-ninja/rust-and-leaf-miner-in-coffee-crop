@@ -15,7 +15,7 @@ from dataset_tools.templates import (
 ##################################
 PROJECT_NAME: str = "Rust and Leaf Miner in Coffee Crop"
 PROJECT_NAME_FULL: str = "Rust (Hemileia Vastatrix) and Leaf Miner (Leucoptera Coffeella) in Coffee Crop (Coffea Arabica)"
-HIDE_DATASET = True  # set False when 100% sure about repo quality
+HIDE_DATASET = False # set False when 100% sure about repo quality
 
 ##################################
 # * After uploading to instance ##
