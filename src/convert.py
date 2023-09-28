@@ -1,12 +1,29 @@
-import supervisely as sly
-import os
-from dataset_tools.convert import unpack_if_archive
-import src.settings as s
-from urllib.parse import unquote, urlparse
-from supervisely.io.fs import get_file_name, get_file_size
-import shutil
+# https://www.kaggle.com/datasets/alvarole/coffee-leaves-disease
 
+import os
+import shutil
+import xml.etree.ElementTree as ET
+from urllib.parse import unquote, urlparse
+
+import cv2
+import numpy as np
+import supervisely as sly
+from dataset_tools.convert import unpack_if_archive
+from dotenv import load_dotenv
+from supervisely.io.fs import (
+    dir_exists,
+    file_exists,
+    get_file_ext,
+    get_file_name,
+    get_file_name_with_ext,
+    get_file_size,
+    mkdir,
+    remove_dir,
+)
 from tqdm import tqdm
+
+import src.settings as s
+
 
 def download_dataset(teamfiles_dir: str) -> str:
     """Use it for large datasets to convert them on the instance"""
@@ -69,17 +86,98 @@ def count_files(path, extension):
 def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
-    ### Function should read local dataset and upload it to Supervisely project, then return project info.###
-    raise NotImplementedError("The converter should be implemented manually.")
 
-    # dataset_path = "/local/path/to/your/dataset" # general way
-    # dataset_path = download_dataset(teamfiles_dir) # for large datasets stored on instance
+    # project_name = "Disease and pest in coffee leaves"
+    dataset_path = "/home/grokhi/rawdata/rust-and-leaf-miner-in-coffee-crop"
 
-    # ... some code here ...
+    images_ext = ".jpg"
+    masks_ext = ".xml"
+    batch_size = 30
 
-    # sly.logger.info('Deleting temporary app storage files...')
-    # shutil.rmtree(storage_dir)
+    ds_name = "ds"
 
-    # return project
+
+    def create_ann(image_path):
+        labels = []
+
+        image_np = sly.imaging.image.read(image_path)[:, :, 0]
+        img_height = image_np.shape[0]
+        img_width = image_np.shape[1]
+
+        ann_path = os.path.join(curr_ds_path, get_file_name(image_path) + ".xml")
+
+        tree = ET.parse(ann_path)
+        root = tree.getroot()
+        # img_height = int(root.find(".//height").text)
+        # img_width = int(root.find(".//width").text)
+        objects_content = root.findall(".//object")
+        for obj_data in objects_content:
+            name = obj_data.find(".//name").text
+            if name == "ferrugemw":
+                name = "ferrugem"
+            bndbox = obj_data.find(".//bndbox")
+            top = int(bndbox.find(".//ymin").text)
+            left = int(bndbox.find(".//xmin").text)
+            bottom = int(bndbox.find(".//ymax").text)
+            right = int(bndbox.find(".//xmax").text)
+
+            rectangle = sly.Rectangle(top=top, left=left, bottom=bottom, right=right)
+            obj_class = name_to_class.get(name)
+            label = sly.Label(rectangle, obj_class)
+            labels.append(label)
+
+        return sly.Annotation(img_size=(img_height, img_width), labels=labels)
+
+
+    obj_class_bicho_mineiro = sly.ObjClass("leaf miner", sly.Rectangle)
+    obj_class_ferrugem = sly.ObjClass("rust", sly.Rectangle)
+
+    name_to_class = {"bicho_mineiro": obj_class_bicho_mineiro, "ferrugem": obj_class_ferrugem}
+
+    project = api.project.create(workspace_id, project_name, change_name_if_conflict=True)
+    meta = sly.ProjectMeta(obj_classes=[obj_class_bicho_mineiro, obj_class_ferrugem])
+    api.project.update_meta(project.id, meta.to_json())
+
+    dataset = api.dataset.create(project.id, ds_name, change_name_if_conflict=True)
+
+    for folder_name in os.listdir(dataset_path):
+        curr_ds_path = os.path.join(dataset_path, folder_name)
+
+        if dir_exists(curr_ds_path):
+            
+            images_names = [
+                im_name for im_name in os.listdir(curr_ds_path) if get_file_ext(im_name) == images_ext
+            ]
+
+            progress = sly.Progress("Create dataset {}".format(folder_name), len(images_names))
+
+            for img_names_batch in sly.batched(images_names, batch_size=batch_size):
+                img_pathes_batch = [os.path.join(curr_ds_path, im_name) for im_name in img_names_batch]
+
+                # TODO =========================== must have, check EXIF Rotate 180 =========================
+                temp_img_pathes_batch = []
+                temp_folder = os.path.join(curr_ds_path, "temp")
+                mkdir(temp_folder)
+                for im_path in img_pathes_batch:
+                    temp_img = cv2.imread(
+                        im_path,
+                        flags=cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH | cv2.IMREAD_IGNORE_ORIENTATION,
+                    )
+                    new_img_path = os.path.join(temp_folder, get_file_name_with_ext(im_path))
+                    temp_img_pathes_batch.append(new_img_path)
+                    cv2.imwrite(new_img_path, temp_img)
+
+                # TODO =======================================================================================
+
+                img_infos = api.image.upload_paths(dataset.id, img_names_batch, temp_img_pathes_batch)
+                img_ids = [im_info.id for im_info in img_infos]
+
+                anns = [create_ann(image_path) for image_path in temp_img_pathes_batch]
+                api.annotation.upload_anns(img_ids, anns)
+
+                remove_dir(temp_folder)
+
+                progress.iters_done_report(len(img_names_batch))
+    return project
 
 

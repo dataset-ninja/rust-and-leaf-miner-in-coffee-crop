@@ -13,37 +13,37 @@ from dataset_tools.templates import (
 ##################################
 # * Before uploading to instance #
 ##################################
-PROJECT_NAME: str = None
-PROJECT_NAME_FULL: str = None
+PROJECT_NAME: str = "Rust and Leaf Miner in Coffee Crop"
+PROJECT_NAME_FULL: str = "Rust (Hemileia Vastatrix) and Leaf Miner (Leucoptera Coffeella) in Coffee Crop (Coffea Arabica)"
 HIDE_DATASET = True  # set False when 100% sure about repo quality
 
 ##################################
 # * After uploading to instance ##
 ##################################
-LICENSE: License = None
-APPLICATIONS: List[Union[Industry, Domain, Research]] = None
-CATEGORY: Category = None
+LICENSE: License = License.CC_BY_4_0()
+APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Agricultural()]
+CATEGORY: Category = Category.Agriculture()
 
-CV_TASKS: List[CVTask] = None
-ANNOTATION_TYPES: List[AnnotationType] = None
+CV_TASKS: List[CVTask] = [CVTask.ObjectDetection()]
+ANNOTATION_TYPES: List[AnnotationType] = [AnnotationType.ObjectDetection()]
 
-RELEASE_DATE: Optional[str] = None  # e.g. "YYYY-MM-DD"
+RELEASE_DATE: Optional[str] = "2020-09-20"  # e.g. "YYYY-MM-DD"
 if RELEASE_DATE is None:
     RELEASE_YEAR: int = None
 
-HOMEPAGE_URL: str = None
+HOMEPAGE_URL: str = "https://data.mendeley.com/datasets/vfxf4trtcg/5"
 # e.g. "https://some.com/dataset/homepage"
 
-PREVIEW_IMAGE_ID: int = None
+PREVIEW_IMAGE_ID: int = 5251253
 # This should be filled AFTER uploading images to instance, just ID of any image.
 
-GITHUB_URL: str = None
+GITHUB_URL: str = "https://github.com/dataset-ninja/rust-and-leaf-miner-in-coffee-crop"
 # URL to GitHub repo on dataset ninja (e.g. "https://github.com/dataset-ninja/some-dataset")
 
 ##################################
 ### * Optional after uploading ###
 ##################################
-DOWNLOAD_ORIGINAL_URL: Optional[Union[str, dict]] = None
+DOWNLOAD_ORIGINAL_URL: Optional[Union[str, dict]] = "https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/vfxf4trtcg-5.zip"
 # Optional link for downloading original dataset (e.g. "https://some.com/dataset/download")
 
 CLASS2COLOR: Optional[Dict[str, List[str]]] = None
@@ -51,15 +51,17 @@ CLASS2COLOR: Optional[Dict[str, List[str]]] = None
 
 # If you have more than the one paper, put the most relatable link as the first element of the list
 # Use dict key to specify name for a button
-PAPER: Optional[Union[str, List[str], Dict[str, str]]] = None
+PAPER: Optional[Union[str, List[str], Dict[str, str]]] = "https://arxiv.org/abs/2103.11241"
 BLOGPOST: Optional[Union[str, List[str], Dict[str, str]]] = None
-REPOSITORY: Optional[Union[str, List[str], Dict[str, str]]] = None
+REPOSITORY: Optional[Union[str, List[str], Dict[str, str]]] = {"Alternative Source": "https://www.kaggle.com/datasets/alvarole/coffee-leaves-disease"}
 
-CITATION_URL: Optional[str] = None
-AUTHORS: Optional[List[str]] = None
+CITATION_URL: Optional[str] = "https://data.mendeley.com/datasets/vfxf4trtcg/5"
+AUTHORS: Optional[List[str]] = ["Lucas Brito Silva",
+"Álvaro Leandro Cavalcante Carneiro",
+"Marisa Silveira Almeida Renaud Faulin"]
 
-ORGANIZATION_NAME: Optional[Union[str, List[str]]] = None
-ORGANIZATION_URL: Optional[Union[str, List[str]]] = None
+ORGANIZATION_NAME: Optional[Union[str, List[str]]] = "São Paulo State Faculty of Technology, Brazil"
+ORGANIZATION_URL: Optional[Union[str, List[str]]] = "https://www.fatecpompeia.edu.br/"
 
 # Set '__PRETEXT__' or '__POSTTEXT__' as a key with string value to add custom text. e.g. SLYTAGSPLIT = {'__POSTTEXT__':'some text}
 SLYTAGSPLIT: Optional[Dict[str, Union[List[str], str]]] = None
