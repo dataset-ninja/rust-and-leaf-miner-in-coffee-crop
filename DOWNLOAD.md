@@ -1,6 +1,6 @@
 Dataset **Rust and Leaf Miner in Coffee Crop** can be downloaded in [Supervisely format](https://developer.supervisely.com/api-references/supervisely-annotation-json-format):
 
- [Download](https://assets.supervisely.com/supervisely-supervisely-assets-public/teams_storage/G/l/af/9bumacI8I6EyVBqvsWSMoS9vE12h2GSAeKadEKCE1l0n5aYoLyn0C0jC5o5wG81skqS8aT0HOh8zwzqrPsid7p5QrpSyrCTM9s59QyGt4fJCgOS1SDooS8MtIiop.tar)
+ [Download](https://assets.supervisely.com/supervisely-supervisely-assets-public/teams_storage/p/P/nW/WPW94w89kuJtLNqVP3NikWZeYKJSGkwfkcq6b0vxuHhAuHoCbl05IuvMtQtnstpS4pxQv6tu555Ts2bwKB7dqYbrQuWaAcBRhYL9WpvDL3jjEeDpaMqTU8SJTWOU.tar)
 
 As an alternative, it can be downloaded with *dataset-tools* package:
 ``` bash
