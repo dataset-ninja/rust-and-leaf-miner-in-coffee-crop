@@ -24,7 +24,7 @@ LICENSE: License = License.CC_BY_4_0()
 APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Agricultural()]
 CATEGORY: Category = Category.Agriculture()
 
-CV_TASKS: List[CVTask] = [CVTask.ObjectDetection(), CVTask.SemiSupervisedLearning()]
+CV_TASKS: List[CVTask] = [CVTask.ObjectDetection()]
 ANNOTATION_TYPES: List[AnnotationType] = [AnnotationType.ObjectDetection()]
 
 RELEASE_DATE: Optional[str] = "2020-09-20"  # e.g. "YYYY-MM-DD"
